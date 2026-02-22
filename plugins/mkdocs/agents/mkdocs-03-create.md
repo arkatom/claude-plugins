@@ -365,4 +365,4 @@ mkdocs-04-detail サブエージェントで詳細ドキュメント作成
 
 - 基本原則: [CLAUDE.md](../../../CLAUDE.md)
 - 品質基準: [.claude/instructions/must.md](../../instructions/must.md)
-- 核心原則: [.claude/instructions/documentation/core.md](../../instructions/documentation/core.md)
+- 核心原則: [instructions/core.md](../instructions/core.md)
