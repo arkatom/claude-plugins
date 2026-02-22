@@ -1,0 +1,68 @@
+{
+  "meta": {
+    "generated_at": "ISO 8601形式の日時",
+    "target": "ユーザー指定の対象",
+    "project_name": "プロジェクト名（動的取得）",
+    "total_testcases": 0,
+    "by_priority": {
+      "Critical": 0,
+      "High": 0,
+      "Medium": 0,
+      "Low": 0
+    },
+    "by_category": {
+      "正常系": 0,
+      "異常系": 0,
+      "境界値": 0,
+      "セキュリティ": 0
+    },
+    "options": {
+      "format": "md,csv,json",
+      "priority_filter": null,
+      "no_verify": false,
+      "verbose": false
+    }
+  },
+  "testcases": [
+    {
+      "id": "TC_<機能>_<番号>",
+      "feature": "機能名（動的取得）",
+      "description": "テストケースの説明",
+      "priority": "Critical|High|Medium|Low",
+      "risk_score": 0,
+      "risk_breakdown": {
+        "business_impact": 0,
+        "user_visibility": 0,
+        "technical_complexity": 0
+      },
+      "category": "正常系|異常系|境界値|セキュリティ",
+      "preconditions": [
+        "前提条件1",
+        "前提条件2"
+      ],
+      "steps": [
+        {
+          "number": 1,
+          "action": "アクション（動詞で開始）",
+          "expected_result": "期待される結果"
+        }
+      ],
+      "test_data": {
+        "field1": "値1",
+        "field2": "値2"
+      },
+      "gherkin": "Feature: ...\nScenario: ...\n  Given ...\n  When ...\n  Then ...",
+      "related": {
+        "endpoint": "/path/to/endpoint",
+        "controller": "app/Http/Controllers/XXXController.php",
+        "validation": "app/Http/Requests/XXXRequest.php",
+        "spec_doc": "docs/specs/xxx/xxx.md"
+      },
+      "status": "未実施",
+      "executed_at": null,
+      "executed_by": null,
+      "result": null,
+      "notes": ""
+    }
+  ]
+}

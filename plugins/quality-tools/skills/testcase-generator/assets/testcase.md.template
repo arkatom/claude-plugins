@@ -1,0 +1,73 @@
+# TC_{id}: {description}
+
+**優先度**: {priority}
+**リスクスコア**: {risk_score}
+**カテゴリ**: {category}
+**作成日**: {created_at}
+
+---
+
+## 前提条件
+
+{preconditions}
+
+---
+
+## テストステップ
+
+| # | アクション | 期待結果 | 実施結果 | 備考 |
+|---|----------|---------|---------|------|
+{steps_table}
+
+---
+
+## テストデータ
+
+{test_data_table}
+
+---
+
+## Gherkin形式
+
+```gherkin
+{gherkin}
+```
+
+---
+
+## リスク評価
+
+- **ビジネス影響度**: {business_impact} / 5
+- **ユーザー可視性**: {user_visibility} / 3
+- **技術複雑性**: {technical_complexity} / 3
+- **合計スコア**: {risk_score}
+
+### 評価理由
+
+{risk_rationale}
+
+---
+
+## 関連情報
+
+- **エンドポイント**: `{endpoint}`
+- **コントローラー**: [{controller}]({controller_path})
+- **バリデーション**: [{validation}]({validation_path})
+- **仕様書**: [{spec}]({spec_path})
+
+---
+
+## 実行管理
+
+| 項目 | 内容 |
+|------|------|
+| ステータス | {status} |
+| 実施日 | {executed_at} |
+| 実施者 | {executed_by} |
+| 結果 | {result} |
+| 備考 | {notes} |
+
+---
+
+**生成日時**: {generated_at}
+**生成元**: `/testcase-generator`

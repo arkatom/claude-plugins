@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>セキュリティレポート - ダッシュボード | Meister System (MS)</title>
+<style>
+:root {
+  --primary-50: #eff6ff;
+  --primary-100: #dbeafe;
+  --primary-200: #bfdbfe;
+  --primary-300: #93c5fd;
+  --primary-400: #60a5fa;
+  --primary-500: #3b82f6;
+  --primary-600: #2563eb;
+  --primary-700: #1d4ed8;
+  --primary-800: #1e40af;
+  --primary-900: #1e3a8a;
+  --severity-critical: #dc2626;
+  --severity-high: #f97316;
+  --severity-medium: #fbbf24;
+  --severity-low: #10b981;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  --dark-bg: #0f172a;
+  --dark-surface: #1e293b;
+  --dark-border: #334155;
+  --dark-text: #f1f5f9;
+  --dark-text-secondary: #94a3b8;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans JP", sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--gray-900);
+  background: var(--gray-50);
+}
+
+body.dark-mode {
+  background: var(--dark-bg);
+  color: var(--dark-text);
+}
+
+body.dark-mode .card,
+body.dark-mode .sidebar,
+body.dark-mode .metadata-table,
+body.dark-mode .vulnerability-table {
+  background: var(--dark-surface);
+  color: var(--dark-text);
+  border-color: var(--dark-border);
+}
+
+body.dark-mode .stat-card {
+  background: var(--dark-surface);
+  border-color: var(--dark-border);
+}
+
+body.dark-mode .stat-count {
+  color: var(--dark-text);
+}
+
+body.dark-mode .stat-title,
+body.dark-mode .stat-subtitle,
+body.dark-mode .nav-section-title,
+body.dark-mode .nav-link,
+body.dark-mode .card-title,
+body.dark-mode .content-section h2,
+body.dark-mode .content-section h3,
+body.dark-mode .sidebar-header h2 {
+  color: var(--dark-text);
+}
+
+body.dark-mode .vulnerability-table th,
+body.dark-mode .metadata-table th,
+body.dark-mode .metadata-table td {
+  color: var(--dark-text);
+}
+
+body.dark-mode .nav-link:hover,
+body.dark-mode .nav-link.active {
+  background: var(--dark-border);
+  color: var(--dark-text);
+}
+
+body.dark-mode .vulnerability-table thead {
+  background: var(--dark-surface);
+}
+
+body.dark-mode .vulnerability-table th:hover {
+  background: var(--dark-border);
+}
+
+body.dark-mode .vulnerability-table tbody tr:hover {
+  background: var(--dark-border);
+}
+
+body.dark-mode .metadata-section {
+  background: var(--dark-surface);
+  border: 1px solid var(--dark-border);
+}
+
+body.dark-mode .content-section p {
+  color: var(--dark-text);
+}
+
+body.dark-mode table {
+  color: var(--dark-text);
+  border-color: var(--dark-border);
+}
+
+body.dark-mode table th,
+body.dark-mode table td {
+  border-color: var(--dark-border);
+}
+
+body.dark-mode .vuln-content table th {
+  background: var(--dark-border);
+}
+
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  grid-template-rows: auto 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.header {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, var(--primary-700) 0%, var(--primary-600) 100%);
+  color: white;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.repo-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-right: auto;
+  margin-left: 2rem;
+}
+
+.repo-tab {
+  padding: 0.5rem 1.25rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.repo-tab:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.repo-tab.active {
+  background: white;
+  color: var(--primary-700);
+  border-color: white;
+  font-weight: 600;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.btn-primary {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-primary:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+
+.sidebar {
+  background: white;
+  border-right: 1px solid var(--gray-200);
+  overflow-y: auto;
+  padding: 1.5rem;
+}
+
+.sidebar-header {
+  margin-bottom: 1.5rem;
+}
+
+.sidebar-header h2 {
+  font-size: 1.25rem;
+  color: var(--primary-700);
+}
+
+.nav-section {
+  margin-bottom: 1.5rem;
+}
+
+.nav-section-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--gray-600);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.05em;
+}
+
+.nav-list {
+  list-style: none;
+}
+
+.nav-list li {
+  margin-bottom: 0.25rem;
+}
+
+.nav-link {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  color: var(--gray-700);
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  background: var(--primary-50);
+  color: var(--primary-700);
+}
+
+.main-content {
+  overflow-y: auto;
+  padding: 2rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border-left: 4px solid;
+}
+
+.stat-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.stat-card.critical { border-left-color: var(--severity-critical); }
+.stat-card.high { border-left-color: var(--severity-high); }
+.stat-card.medium { border-left-color: var(--severity-medium); }
+.stat-card.low { border-left-color: var(--severity-low); }
+
+.stat-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.stat-icon {
+  font-size: 2rem;
+}
+
+.stat-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--gray-600);
+  text-transform: uppercase;
+}
+
+.stat-count {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+
+.stat-subtitle {
+  font-size: 0.875rem;
+  color: var(--gray-500);
+  margin-top: 0.25rem;
+}
+
+.card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--gray-200);
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+
+.filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-select {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--gray-300);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px var(--primary-100);
+}
+
+.vulnerability-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.vulnerability-table thead {
+  background: var(--gray-50);
+}
+
+.vulnerability-table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--gray-700);
+  border-bottom: 2px solid var(--gray-200);
+  cursor: pointer;
+  user-select: none;
+}
+
+.vulnerability-table th:hover {
+  background: var(--gray-100);
+}
+
+.vulnerability-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.vulnerability-table tbody tr:hover {
+  background: var(--gray-50);
+}
+
+.cvss-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+}
+
+.cvss-badge.critical {
+  background: var(--severity-critical);
+  color: white;
+}
+
+.cvss-badge.high {
+  background: var(--severity-high);
+  color: white;
+}
+
+.cvss-badge.medium {
+  background: var(--severity-medium);
+  color: var(--gray-900);
+}
+
+.cvss-badge.low {
+  background: var(--severity-low);
+  color: white;
+}
+
+.vuln-link {
+  color: var(--primary-600);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.vuln-link:hover {
+  color: var(--primary-700);
+  text-decoration: underline;
+}
+
+.metadata-section {
+  margin: 1.5rem 0;
+  background: var(--gray-50);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.metadata-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.metadata-table th {
+  text-align: left;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  color: var(--gray-700);
+  width: 30%;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.metadata-table td {
+  padding: 0.5rem 1rem;
+  color: var(--gray-900);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.content-section {
+  margin-bottom: 3rem;
+  scroll-margin-top: 2rem;
+}
+
+.content-section h2 {
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+  color: var(--gray-900);
+}
+
+.content-section h3 {
+  font-size: 1.25rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: var(--gray-800);
+}
+
+.content-section p {
+  margin-bottom: 1rem;
+  line-height: 1.7;
+}
+
+.content-section ul,
+.content-section ol {
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.content-section li {
+  margin-bottom: 0.5rem;
+}
+
+.vuln-content ul,
+.vuln-content ol {
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+  line-height: 1.8;
+}
+
+.vuln-content li {
+  margin-bottom: 0.5rem;
+}
+
+pre {
+  background: var(--gray-900);
+  color: #f8f8f2;
+  padding: 1.5rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1rem 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+code {
+  font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+}
+
+pre code {
+  background: transparent;
+  padding: 0;
+}
+
+.vuln-content a {
+  color: var(--primary-600);
+  text-decoration: none;
+}
+
+.vuln-content a:hover {
+  text-decoration: underline;
+}
+
+.vuln-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+}
+
+.vuln-content table th {
+  background: var(--gray-100);
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  border: 1px solid var(--gray-300);
+}
+
+.vuln-content table td {
+  padding: 0.75rem;
+  border: 1px solid var(--gray-300);
+}
+
+@media (max-width: 968px) {
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--gray-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gray-400);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gray-500);
+}
+</style>
+</head>
+<body>
+
+<div class="dashboard-layout">
+  <header class="header">
+    <h1>🔒 セキュリティレポート - ダッシュボード</h1>
+    <div class="repo-tabs" id="repo-tabs"></div>
+    <div class="header-actions">
+      <button class="btn btn-primary" onclick="toggleDarkMode()">🌙 ダークモード</button>
+    </div>
+  </header>
+
+  <nav class="sidebar" id="sidebar"></nav>
+
+  <main class="main-content" id="main-content">
+    <section id="overview" class="content-section">
+      <h2>統計概要</h2>
+      <div class="stats-grid" id="stats-grid"></div>
+    </section>
+
+    <section id="all-vulnerabilities">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">全脆弱性一覧</h2>
+        </div>
+        <div class="filters">
+          <select class="filter-select" id="severity-filter" onchange="filterVulnerabilities()">
+            <option value="all">全ての深刻度</option>
+            <option value="critical">Critical</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+          <select class="filter-select" id="phase-filter" onchange="filterVulnerabilities()">
+            <option value="all">全てのPhase</option>
+            <option value="1">Phase 1 (24h)</option>
+            <option value="2">Phase 2 (1週間)</option>
+            <option value="3">Phase 3 (1ヶ月)</option>
+          </select>
+        </div>
+        <table class="vulnerability-table" id="vuln-table">
+          <thead id="vuln-table-head">
+            <tr>
+              <th onclick="sortTable('id')">ID ▼</th>
+              <th onclick="sortTable('title')">タイトル</th>
+              <th onclick="sortTable('severity')">深刻度</th>
+              <th onclick="sortTable('cvss')">CVSS</th>
+              <th onclick="sortTable('phase')">Phase</th>
+              <th onclick="sortTable('roi')">ROI</th>
+            </tr>
+          </thead>
+          <tbody id="vuln-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <div id="dynamic-content"></div>
+  </main>
+</div>
+
+<script type="application/json" id="markdown-data">[]</script>
+<script type="application/json" id="vuln-data">{"metadata":{"total_vulnerabilities":0,"by_severity":{"critical":0,"high":0,"medium":0,"low":0}},"vulnerabilities":[]}</script>
+
+<script>
+const MARKDOWN_DOCUMENTS = JSON.parse(document.getElementById('markdown-data').textContent);
+const VULN_DATA = JSON.parse(document.getElementById('vuln-data').textContent);
+
+let allVulnerabilities = [];
+let currentSort = { column: 'id', order: 'asc' };
+let processedDocuments = [];
+let allRepositories = [];
+let currentRepository = 'all';
+
+function parseYamlFrontMatter(markdown) {
+  const match = markdown.match(/^---\n([\s\S]*?)\n---/);
+  if (!match) return null;
+
+  const yamlContent = match[1];
+  const metadata = {};
+
+  yamlContent.split('\n').forEach(line => {
+    if (line.trim().startsWith('#')) return;
+    const colonIndex = line.indexOf(':');
+    if (colonIndex === -1) return;
+
+    const key = line.substring(0, colonIndex).trim();
+    let value = line.substring(colonIndex + 1).trim();
+    value = value.replace(/^["']|["']$/g, '');
+
+    if (value === 'true') metadata[key] = true;
+    else if (value === 'false') metadata[key] = false;
+    else if (!isNaN(value) && value !== '') metadata[key] = Number(value);
+    else metadata[key] = value;
+  });
+
+  return metadata;
+}
+
+function markdownToHtml(md) {
+  let html = md;
+  const tablePlaceholders = [];
+
+  html = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, (match) => {
+    return match.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  });
+
+  html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
+    const escaped = code.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const langClass = lang || 'text';
+    return '<pre><code class="language-' + langClass + '">' + escaped + '</code></pre>';
+  });
+
+  const lines = html.split('\n');
+  const convertedLines = [];
+  let tableCount = 0;
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+
+    // テーブルのヘッダー行を検出（| で始まり | で終わる）
+    if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+      // 次の行がセパレーター行か確認
+      if (i + 1 < lines.length) {
+        const nextLine = lines[i + 1];
+        if (nextLine.match(/^\|[-:\s|]+\|$/)) {
+          // テーブルの開始
+          const headers = line.split('|').filter(h => h.trim()).map(h => h.trim());
+
+          let tableHtml = '<table><thead><tr>';
+          headers.forEach(h => {
+            tableHtml += '<th>' + h + '</th>';
+          });
+          tableHtml += '</tr></thead><tbody>';
+
+          // セパレーター行をスキップ
+          i += 2;
+
+          // ボディ行を処理
+          while (i < lines.length && lines[i].trim().startsWith('|') && lines[i].trim().endsWith('|')) {
+            const cells = lines[i].split('|').filter(cell => cell.trim()).map(cell => cell.trim());
+            if (cells.length > 0) {
+              tableHtml += '<tr>';
+              cells.forEach(cell => {
+                // セル内のマークダウンリンクをHTMLに変換
+                let cellHtml = cell;
+                cellHtml = cellHtml.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, url) => {
+                  if (url.toLowerCase().startsWith('javascript:')) {
+                    return '<a href="#blocked">' + text + '</a>';
+                  }
+                  return '<a href="' + url + '">' + text + '</a>';
+                });
+                // VULN-IDリンク化（ただしaタグ内でない場合のみ）
+                if (!cellHtml.includes('<a')) {
+                  cellHtml = cellHtml.replace(/\b(VULN-\d{3})\b/g, '<a href="#$1" class="vuln-link">$1</a>');
+                }
+                tableHtml += '<td>' + cellHtml + '</td>';
+              });
+              tableHtml += '</tr>';
+            }
+            i++;
+          }
+
+          tableHtml += '</tbody></table>';
+
+          // テーブルをプレースホルダーに置き換え
+          const placeholder = '__TABLE_PLACEHOLDER_' + tableCount + '__';
+          tablePlaceholders.push({ placeholder: placeholder, html: tableHtml });
+          convertedLines.push(placeholder);
+          tableCount++;
+          continue;
+        }
+      }
+    }
+
+    convertedLines.push(line);
+    i++;
+  }
+
+  html = convertedLines.join('\n');
+
+  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+  html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+  html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+
+  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+  html = html.replace(/^\d+\.\s+(.+)$/gm, '<oli>$1</oli>');
+
+  html = html.replace(/^\- (.+)$/gm, '<li>$1</li>');
+
+  const lines2 = html.split('\n');
+  let inList = false;
+  let inOList = false;
+  const result = [];
+  for (const line of lines2) {
+    if (line.trim().startsWith('<oli>')) {
+      if (!inOList) {
+        result.push('<ol>');
+        inOList = true;
+      }
+      result.push(line.replace('<oli>', '<li>').replace('</oli>', '</li>'));
+    } else if (line.trim().startsWith('<li>')) {
+      if (inOList) {
+        result.push('</ol>');
+        inOList = false;
+      }
+      if (!inList) {
+        result.push('<ul>');
+        inList = true;
+      }
+      result.push(line);
+    } else {
+      if (inList) {
+        result.push('</ul>');
+        inList = false;
+      }
+      if (inOList) {
+        result.push('</ol>');
+        inOList = false;
+      }
+      result.push(line);
+    }
+  }
+  if (inList) result.push('</ul>');
+  if (inOList) result.push('</ol>');
+  html = result.join('\n');
+
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, url) => {
+    if (url.toLowerCase().startsWith('javascript:')) {
+      return `<a href="#blocked">${escapeHtmlStr(text)}</a>`;
+    }
+    return `<a href="${escapeHtmlStr(url)}">${escapeHtmlStr(text)}</a>`;
+  });
+
+  html = html.replace(/\b(VULN-\d{3})\b/g, '<a href="#$1" class="vuln-link">$1</a>');
+
+  html = html.replace(/\n\n+/g, '</p><p>');
+  html = '<p>' + html + '</p>';
+  html = html.replace(/<p><h/g, '<h').replace(/<\/h([123])><\/p>/g, '</h$1>');
+  html = html.replace(/<p><pre>/g, '<pre>').replace(/<\/pre><\/p>/g, '</pre>');
+  html = html.replace(/<p><ul>/g, '<ul>').replace(/<\/ul><\/p>/g, '</ul>');
+  html = html.replace(/<p><ol>/g, '<ol>').replace(/<\/ol><\/p>/g, '</ol>');
+  html = html.replace(/<p><table>/g, '<table>').replace(/<\/table><\/p>/g, '</table>');
+  html = html.replace(/<p><\/p>/g, '');
+
+  tablePlaceholders.forEach(({ placeholder, html: tableHtml }) => {
+    html = html.replace(placeholder, tableHtml);
+  });
+
+  return html;
+}
+
+function escapeHtmlStr(text) {
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function generateMetadataTable(metadata) {
+  if (!metadata || Object.keys(metadata).length === 0) return '';
+
+  const formatCurrency = (amount) => `¥${amount.toLocaleString('ja-JP')}`;
+  const getCvssBadge = (cvss, severity) => {
+    const sev = severity || (cvss >= 9.0 ? 'critical' : cvss >= 7.0 ? 'high' : cvss >= 4.0 ? 'medium' : 'low');
+    return `<span class="cvss-badge ${sev}">${cvss.toFixed(1)} ${sev.toUpperCase()}</span>`;
+  };
+
+  let rows = [];
+  if (metadata.id) rows.push(`<tr><th>ID</th><td><span class="vuln-id">${metadata.id}</span></td></tr>`);
+  if (metadata.title) rows.push(`<tr><th>タイトル</th><td>${escapeHtmlStr(metadata.title)}</td></tr>`);
+  if (metadata.cvss) rows.push(`<tr><th>CVSS v3.1</th><td>${getCvssBadge(metadata.cvss, metadata.severity)}</td></tr>`);
+  if (metadata.category) rows.push(`<tr><th>カテゴリ</th><td>${metadata.owasp || ''} - ${metadata.category}</td></tr>`);
+  if (metadata.cwe) {
+    const cweNum = String(metadata.cwe).replace('CWE-', '');
+    rows.push(`<tr><th>CWE</th><td><a href="https://cwe.mitre.org/data/definitions/${cweNum}.html" target="_blank">${metadata.cwe}</a></td></tr>`);
+  }
+  if (metadata.phase) rows.push(`<tr><th>Phase</th><td>Phase ${metadata.phase}</td></tr>`);
+  if (metadata.effort_hours) rows.push(`<tr><th>工数見積</th><td>${metadata.effort_hours}時間</td></tr>`);
+  if (metadata.cost_to_fix) rows.push(`<tr><th>修正コスト</th><td>${formatCurrency(metadata.cost_to_fix)}</td></tr>`);
+  if (metadata.risk_cost) rows.push(`<tr><th>リスクコスト</th><td>${formatCurrency(metadata.risk_cost)}</td></tr>`);
+  if (metadata.risk_cost && metadata.cost_to_fix) {
+    const roi = (metadata.risk_cost / metadata.cost_to_fix).toFixed(1);
+    rows.push(`<tr><th>ROI</th><td>${roi}x</td></tr>`);
+  }
+
+  if (rows.length === 0) return '';
+  return `<div class="metadata-section"><table class="metadata-table">${rows.join('')}</table></div>`;
+}
+
+function processDocuments() {
+  processedDocuments = MARKDOWN_DOCUMENTS.map(doc => {
+    const metadata = parseYamlFrontMatter(doc.content);
+    const bodyMatch = doc.content.match(/^---\n[\s\S]*?\n---\n([\s\S]*)$/);
+    const body = bodyMatch ? bodyMatch[1] : doc.content;
+
+    const htmlBody = markdownToHtml(body);
+
+    return {
+      filename: doc.filename,
+      path: doc.path,
+      repository: doc.repository || 'default',
+      metadata: metadata || {},
+      htmlBody: htmlBody,
+      metadataTable: generateMetadataTable(metadata)
+    };
+  });
+
+  allVulnerabilities = VULN_DATA.vulnerabilities || [];
+  allRepositories = VULN_DATA.metadata.repositories || [];
+}
+
+function renderRepoTabs() {
+  const tabsContainer = document.getElementById('repo-tabs');
+  if (!tabsContainer) return;
+
+  if (allRepositories.length <= 1) {
+    tabsContainer.style.display = 'none';
+    return;
+  }
+
+  let html = '<button class="repo-tab active" onclick="switchRepository(\'all\')">全体</button>';
+  allRepositories.forEach(repo => {
+    html += '<button class="repo-tab" onclick="switchRepository(\'' + repo + '\')">' + escapeHtmlStr(repo) + '</button>';
+  });
+
+  tabsContainer.innerHTML = html;
+}
+
+function switchRepository(repo) {
+  currentRepository = repo;
+
+  document.querySelectorAll('.repo-tab').forEach(tab => tab.classList.remove('active'));
+  event.target.classList.add('active');
+
+  renderStats();
+  renderSidebar();
+  filterVulnerabilities();
+  renderDynamicContent();
+}
+
+function getFilteredData() {
+  if (currentRepository === 'all') {
+    return {
+      documents: processedDocuments,
+      vulnerabilities: allVulnerabilities
+    };
+  }
+
+  return {
+    documents: processedDocuments.filter(d => d.repository === currentRepository),
+    vulnerabilities: allVulnerabilities.filter(v => v.repository === currentRepository)
+  };
+}
+
+function renderStats() {
+  const filtered = getFilteredData();
+  const stats = {critical: 0, high: 0, medium: 0, low: 0};
+
+  filtered.vulnerabilities.forEach(v => {
+    stats[v.severity] = (stats[v.severity] || 0) + 1;
+  });
+
+  const grid = document.getElementById('stats-grid');
+
+  grid.innerHTML = `
+    <div class="stat-card critical">
+      <div class="stat-header">
+        <div class="stat-icon">🔴</div>
+        <div class="stat-title">Critical</div>
+      </div>
+      <div class="stat-count">${stats.critical || 0}</div>
+      <div class="stat-subtitle">即座に対応必要</div>
+    </div>
+    <div class="stat-card high">
+      <div class="stat-header">
+        <div class="stat-icon">🟠</div>
+        <div class="stat-title">High</div>
+      </div>
+      <div class="stat-count">${stats.high || 0}</div>
+      <div class="stat-subtitle">24時間以内</div>
+    </div>
+    <div class="stat-card medium">
+      <div class="stat-header">
+        <div class="stat-icon">🟡</div>
+        <div class="stat-title">Medium</div>
+      </div>
+      <div class="stat-count">${stats.medium || 0}</div>
+      <div class="stat-subtitle">1週間以内</div>
+    </div>
+    <div class="stat-card low">
+      <div class="stat-header">
+        <div class="stat-icon">🟢</div>
+        <div class="stat-title">Low</div>
+      </div>
+      <div class="stat-count">${stats.low || 0}</div>
+      <div class="stat-subtitle">1ヶ月以内</div>
+    </div>
+  `;
+}
+
+function getFirstHeading(htmlBody) {
+  const match = htmlBody.match(/<h1>([^<]+)<\/h1>/);
+  return match ? match[1] : null;
+}
+
+function renderSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const filtered = getFilteredData();
+  const vulnDocs = filtered.documents.filter(d => d.filename.startsWith('VULN-'));
+  const summaryDocs = filtered.documents.filter(d => d.filename.startsWith('00_') || d.filename.startsWith('01_'));
+
+  let html = `
+    <div class="sidebar-header">
+      <h2>📚 ナビゲーション</h2>
+    </div>
+
+    <div class="nav-section">
+      <h3 class="nav-section-title">📊 ダッシュボード</h3>
+      <ul class="nav-list">
+        <li><a href="#overview" class="nav-link">統計概要</a></li>
+        <li><a href="#all-vulnerabilities" class="nav-link">全脆弱性一覧</a></li>
+      </ul>
+    </div>
+  `;
+
+  if (summaryDocs.length > 0) {
+    html += `
+      <div class="nav-section">
+        <h3 class="nav-section-title">📝 サマリー</h3>
+        <ul class="nav-list">
+    `;
+    summaryDocs.forEach(doc => {
+      const id = doc.filename.replace('.md', '');
+      const title = doc.metadata.title || getFirstHeading(doc.htmlBody) || doc.filename.replace('.md', '');
+      html += `<li><a href="#${id}" class="nav-link">${escapeHtmlStr(title)}</a></li>`;
+    });
+    html += `</ul></div>`;
+  }
+
+  if (vulnDocs.length > 0) {
+    html += `
+      <div class="nav-section">
+        <h3 class="nav-section-title">🔍 個別脆弱性</h3>
+        <ul class="nav-list">
+    `;
+    vulnDocs.forEach(doc => {
+      const id = doc.metadata.id || doc.filename.replace('.md', '');
+      const title = doc.metadata.title || id;
+      html += `<li><a href="#${id}" class="nav-link">${id}: ${escapeHtmlStr(title)}</a></li>`;
+    });
+    html += `</ul></div>`;
+  }
+
+  sidebar.innerHTML = html;
+}
+
+function renderVulnTableHeader() {
+  const thead = document.getElementById('vuln-table-head');
+  const showRepoColumn = currentRepository === 'all' && allRepositories.length > 1;
+
+  let headerHtml = '<tr>';
+  if (showRepoColumn) {
+    headerHtml += '<th onclick="sortTable(\'repository\')">リポジトリ ▼</th>';
+  }
+  headerHtml += '<th onclick="sortTable(\'id\')">ID ▼</th>';
+  headerHtml += '<th onclick="sortTable(\'title\')">タイトル</th>';
+  headerHtml += '<th onclick="sortTable(\'severity\')">深刻度</th>';
+  headerHtml += '<th onclick="sortTable(\'cvss\')">CVSS</th>';
+  headerHtml += '<th onclick="sortTable(\'phase\')">Phase</th>';
+  headerHtml += '<th onclick="sortTable(\'roi\')">ROI</th>';
+  headerHtml += '</tr>';
+
+  thead.innerHTML = headerHtml;
+}
+
+function renderVulnTable(vulnerabilities) {
+  renderVulnTableHeader();
+
+  const tbody = document.getElementById('vuln-table-body');
+  tbody.innerHTML = '';
+  const showRepoColumn = currentRepository === 'all' && allRepositories.length > 1;
+
+  vulnerabilities.forEach(v => {
+    const row = document.createElement('tr');
+    let rowHtml = '';
+
+    if (showRepoColumn) {
+      rowHtml += '<td>' + escapeHtmlStr(v.repository || '') + '</td>';
+    }
+
+    rowHtml += '<td><a href="#' + v.id + '" class="vuln-link">' + v.id + '</a></td>';
+    rowHtml += '<td>' + escapeHtmlStr(v.title) + '</td>';
+    rowHtml += '<td><span class="cvss-badge ' + v.severity + '">' + v.severity.toUpperCase() + '</span></td>';
+    rowHtml += '<td><span class="cvss-badge ' + v.severity + '">' + v.cvss.toFixed(1) + '</span></td>';
+    rowHtml += '<td>Phase ' + v.phase + '</td>';
+    rowHtml += '<td>' + v.roi.toFixed(1) + 'x</td>';
+
+    row.innerHTML = rowHtml;
+    tbody.appendChild(row);
+  });
+}
+
+function renderDynamicContent() {
+  const dynamicContent = document.getElementById('dynamic-content');
+  const filtered = getFilteredData();
+  let html = '';
+
+  const summaryDocs = filtered.documents.filter(d => d.filename.startsWith('00_') || d.filename.startsWith('01_'));
+  summaryDocs.forEach(doc => {
+    const id = doc.filename.replace('.md', '');
+    html += `
+      <section id="${id}" class="content-section">
+        ${doc.metadataTable}
+        <div class="vuln-content">${doc.htmlBody}</div>
+      </section>
+    `;
+  });
+
+  const vulnDocs = filtered.documents.filter(d => d.filename.startsWith('VULN-'));
+  vulnDocs.forEach(doc => {
+    const id = doc.metadata.id || doc.filename.replace('.md', '');
+    html += `
+      <section id="${id}" class="content-section">
+        ${doc.metadataTable}
+        <div class="vuln-content">${doc.htmlBody}</div>
+      </section>
+    `;
+  });
+
+  dynamicContent.innerHTML = html;
+}
+
+function filterVulnerabilities() {
+  const severityFilter = document.getElementById('severity-filter').value;
+  const phaseFilter = document.getElementById('phase-filter').value;
+  const filteredByRepo = getFilteredData().vulnerabilities;
+
+  let filtered = filteredByRepo.filter(v => {
+    if (severityFilter !== 'all' && v.severity !== severityFilter) return false;
+    if (phaseFilter !== 'all' && v.phase !== parseInt(phaseFilter)) return false;
+    return true;
+  });
+
+  renderVulnTable(filtered);
+}
+
+function sortTable(column) {
+  if (currentSort.column === column) {
+    currentSort.order = currentSort.order === 'asc' ? 'desc' : 'asc';
+  } else {
+    currentSort.column = column;
+    currentSort.order = 'asc';
+  }
+
+  const severityFilter = document.getElementById('severity-filter').value;
+  const phaseFilter = document.getElementById('phase-filter').value;
+  const filteredByRepo = getFilteredData().vulnerabilities;
+
+  let toSort = filteredByRepo.filter(v => {
+    if (severityFilter !== 'all' && v.severity !== severityFilter) return false;
+    if (phaseFilter !== 'all' && v.phase !== parseInt(phaseFilter)) return false;
+    return true;
+  });
+
+  const sorted = [...toSort].sort((a, b) => {
+    let aVal = a[column];
+    let bVal = b[column];
+
+    if (column === 'cvss' || column === 'roi' || column === 'phase') {
+      aVal = Number(aVal);
+      bVal = Number(bVal);
+    }
+
+    if (currentSort.order === 'asc') {
+      return aVal > bVal ? 1 : -1;
+    } else {
+      return aVal < bVal ? 1 : -1;
+    }
+  });
+
+  renderVulnTable(sorted);
+}
+
+function toggleDarkMode() {
+  document.body.classList.toggle('dark-mode');
+  const isDark = document.body.classList.contains('dark-mode');
+  localStorage.setItem('darkMode', isDark);
+}
+
+function initSmoothScroll() {
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      const href = this.getAttribute('href');
+      const id = href.substring(1);
+      const target = document.getElementById(id);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+        const navLink = document.querySelector(`.nav-link[href="${href}"]`);
+        if (navLink) navLink.classList.add('active');
+      }
+    });
+  });
+}
+
+function init() {
+  processDocuments();
+  renderRepoTabs();
+  renderStats();
+  renderSidebar();
+  filterVulnerabilities();
+  renderDynamicContent();
+  initSmoothScroll();
+
+  if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark-mode');
+  }
+
+  if (typeof hljs !== 'undefined') {
+    document.querySelectorAll('pre code').forEach((block) => {
+      hljs.highlightElement(block);
+    });
+  }
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+</body>
+</html>

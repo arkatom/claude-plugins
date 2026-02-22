@@ -1,0 +1,39 @@
+{
+  "metadata": {
+    "generated": "2026-01-24T15:30:00Z",
+    "project": "Project Name",
+    "total_files": 2866,
+    "scanned_files": 1361,
+    "total_vulnerabilities": 22,
+    "by_severity": {"critical": 3, "high": 7, "medium": 10, "low": 2},
+    "by_category": {"injection": 5, "broken_authentication": 3, "xss": 1},
+    "by_phase": {"phase1": 10, "phase2": 8, "phase3": 4}
+  },
+  "vulnerabilities": [
+    {
+      "id": "VULN-001",
+      "title": "SQL Injection in Login Form",
+      "file": "vulnerabilities/VULN-001-sql-injection-login.md",
+      "severity": "critical",
+      "cvss": 9.8,
+      "category": "injection",
+      "phase": 1,
+      "effort_hours": 2,
+      "cost_to_fix": 30000,
+      "risk_cost": 50000000,
+      "roi": 1666.67,
+      "location": {"file": "actions/login.php", "lines": "42-56"},
+      "status": "open",
+      "related": ["VULN-005"]
+    }
+  ],
+  "remediation_phases": {
+    "phase1": {
+      "name": "Phase 1: 緊急対応（24時間以内）",
+      "vulnerabilities": ["VULN-001", "VULN-002"],
+      "total_effort_hours": 8,
+      "estimated_cost": 120000,
+      "risk_reduction": 80000000
+    }
+  }
+}

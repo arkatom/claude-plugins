@@ -1,0 +1,183 @@
+{
+  "name": "arkatom-plugins",
+  "owner": {
+    "name": "arkatom",
+    "url": "https://github.com/arkatom"
+  },
+  "metadata": {
+    "description": "arkatom's Claude Code plugins — docs generation, dev workflows, quality tools, and more",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "mkdocs",
+      "source": "./plugins/mkdocs",
+      "description": "7フェーズドキュメント生成ワークフロー。プロジェクト固有情報を動的に発見し汎用的なドキュメントを生成する。",
+      "version": "1.0.0",
+      "author": {
+        "name": "arkatom",
+        "url": "https://github.com/arkatom"
+      },
+      "license": "MIT",
+      "keywords": ["documentation", "mkdocs", "7-phase", "workflow"],
+      "category": "documentation",
+      "strict": false,
+      "agents": [
+        "./agents/mkdocs-01-detect.md",
+        "./agents/mkdocs-02-analyze.md",
+        "./agents/mkdocs-03-create.md",
+        "./agents/mkdocs-04-detail.md",
+        "./agents/mkdocs-05-verify.md",
+        "./agents/mkdocs-06-optimize.md",
+        "./agents/mkdocs-07-complete.md"
+      ],
+      "commands": [
+        "./commands/mkdocs.md",
+        "./commands/askdocs.md"
+      ],
+      "skills": [
+        "./skills/doc-updater"
+      ]
+    },
+    {
+      "name": "dev-workflow",
+      "source": "./plugins/dev-workflow",
+      "description": "開発ワークフロー支援。commit/worktree/codex/researchスキルとBash/Grepフック。",
+      "version": "1.0.0",
+      "author": {
+        "name": "arkatom",
+        "url": "https://github.com/arkatom"
+      },
+      "license": "MIT",
+      "keywords": ["git", "commit", "worktree", "research", "workflow"],
+      "category": "development",
+      "strict": false,
+      "commands": [
+        "./commands/serena.md"
+      ],
+      "skills": [
+        "./skills/commit",
+        "./skills/codex",
+        "./skills/research",
+        "./skills/worktree-task"
+      ]
+    },
+    {
+      "name": "document-tools",
+      "source": "./plugins/document-tools",
+      "description": "汎用ドキュメントツール群。Markdownダッシュボード生成、Excel生成、日本語Markdown太字スペース修正。",
+      "version": "1.0.0",
+      "author": {
+        "name": "arkatom",
+        "url": "https://github.com/arkatom"
+      },
+      "license": "MIT",
+      "keywords": ["markdown", "dashboard", "excel", "html", "japanese"],
+      "category": "documentation",
+      "strict": false,
+      "skills": [
+        "./skills/markdown-dashboard",
+        "./skills/excel-generation",
+        "./skills/markdown-bold-spacing"
+      ]
+    },
+    {
+      "name": "quality-tools",
+      "source": "./plugins/quality-tools",
+      "description": "品質管理ツール。セキュリティ脆弱性監査とE2Eテストケース自動生成。",
+      "version": "1.0.0",
+      "author": {
+        "name": "arkatom",
+        "url": "https://github.com/arkatom"
+      },
+      "license": "MIT",
+      "keywords": ["security", "audit", "testcase", "qa", "e2e"],
+      "category": "quality",
+      "strict": false,
+      "skills": [
+        "./skills/security-audit",
+        "./skills/testcase-generator"
+      ]
+    },
+    {
+      "name": "reflection",
+      "source": "./plugins/reflection",
+      "description": "セッション振り返りスキル。学習内容・成功パターン・本音フィードバックを構造化して記録。",
+      "version": "1.0.0",
+      "author": {
+        "name": "arkatom",
+        "url": "https://github.com/arkatom"
+      },
+      "license": "MIT",
+      "keywords": ["reflection", "learning", "feedback", "session"],
+      "category": "productivity",
+      "strict": false,
+      "skills": [
+        "./skills/reflection"
+      ]
+    },
+    {
+      "name": "team",
+      "source": "./plugins/team",
+      "description": "4メンバーチーム協働スキル（PM/Coder/Reviewer/Devil）。Agent Teams機能が必要。",
+      "version": "1.0.0",
+      "author": {
+        "name": "arkatom",
+        "url": "https://github.com/arkatom"
+      },
+      "license": "MIT",
+      "keywords": ["team", "agents", "collaboration", "multi-agent"],
+      "category": "collaboration",
+      "strict": false,
+      "skills": [
+        "./skills/team",
+        "./skills/setup-team"
+      ]
+    },
+    {
+      "name": "security-guard",
+      "source": "./plugins/security-guard",
+      "description": "セキュリティポリシーガード。認証情報・APIキー・PEM鍵漏洩を自動検出しブロック。",
+      "version": "1.0.0",
+      "author": {
+        "name": "arkatom",
+        "url": "https://github.com/arkatom"
+      },
+      "license": "MIT",
+      "keywords": ["security", "credentials", "guard", "hook"],
+      "category": "security",
+      "strict": false
+    },
+    {
+      "name": "session-hooks",
+      "source": "./plugins/session-hooks",
+      "description": "セッション管理フック。開始時刻記録とgit状態チェック。",
+      "version": "1.0.0",
+      "author": {
+        "name": "arkatom",
+        "url": "https://github.com/arkatom"
+      },
+      "license": "MIT",
+      "keywords": ["session", "git", "hooks", "logging"],
+      "category": "development",
+      "strict": false
+    },
+    {
+      "name": "core-instructions",
+      "source": "./plugins/core-instructions",
+      "description": "コア思考原則（絶対厳守・深層思考・完了チェックリスト）と~/.claude/CLAUDE.mdへのインストールスキル。",
+      "version": "1.0.0",
+      "author": {
+        "name": "arkatom",
+        "url": "https://github.com/arkatom"
+      },
+      "license": "MIT",
+      "keywords": ["instructions", "principles", "claude-md", "setup"],
+      "category": "core",
+      "strict": false,
+      "skills": [
+        "./skills/setup-instructions"
+      ]
+    }
+  ]
+}
